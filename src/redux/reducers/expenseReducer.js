@@ -1,6 +1,4 @@
-// expenseReducer.js
-
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk, current} from '@reduxjs/toolkit';
 import {addFirebaseExpense, getExpenses} from "../../firebase/firebase";
 export const fetchExpenses = createAsyncThunk(
     'expenses/fetchExpenses',
@@ -23,12 +21,16 @@ const expenseSlice = createSlice({
     initialState: {
         initialAmount: 500,
         expenses: [],
+        categories: [],
         statusAdd: 'idle',
         errorAdd: null,
         statusFetch: 'idle',
         errorFetch: null,
     },
     reducers: {
+        getCategories: (state) => {
+            state.categories = current(state.expenses).map(exp => exp.category);
+        }
     },
     extraReducers: builder => {
         builder
@@ -63,4 +65,5 @@ const expenseSlice = createSlice({
             });
     },
 });
+export const {getCategories} = expenseSlice.actions;
 export default expenseSlice.reducer;

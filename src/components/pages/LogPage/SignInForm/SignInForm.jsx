@@ -5,6 +5,7 @@ import classes from "../LogPage.module.scss"
 
 import {logPassUser, logPopUpUser} from "../../../../redux/reducers/userReducer";
 import FormInput from "../FormInput/FormInput";
+import {useNavigate} from "react-router-dom";
 
 const SignInForm = () => {
     const [formFields, setFormFields] = useState({
@@ -12,8 +13,8 @@ const SignInForm = () => {
         password: '',
     });
     const {email, password} = formFields;
-
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleChange = (event) => {
         const {name, value} = event.target;
@@ -27,13 +28,14 @@ const SignInForm = () => {
     };
 
     const authUserPopUp = async() => {
-        await dispatch(logPopUpUser())
+        await dispatch(logPopUpUser());
+        navigate("/home")
     };
-
     const authUserEmailAndPass = async(event) => {
         event.preventDefault();
         try {
             await dispatch(logPassUser({password, email}));
+            navigate("/home")
         } catch (e) {
             switch (e.code) {
                 case "auth/wrong-password":

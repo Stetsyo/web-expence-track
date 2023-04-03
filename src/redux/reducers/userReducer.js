@@ -7,6 +7,7 @@ import {
     authByEmailAndPassword
 } from "../../firebase/firebase";
 import {getDoc} from "firebase/firestore";
+import {setLocalSigned} from "./localReducer";
 
 export const logPopUpUser = createAsyncThunk(
     'user/LogPopUpUser',
@@ -22,23 +23,24 @@ export const logPopUpUser = createAsyncThunk(
 );
 export const logPassUser = createAsyncThunk(
     'user/LogPassUser',
-    async ({password, email}) => {
+    async ({password, email}, thunkAPI) => {
         const {user} = await signInByPass(password, email);
         const userDocRef = await createUserDocument(user);
         const userSnapshot = await getDoc(userDocRef);
         if (userSnapshot.exists()) {
+            thunkAPI.dispatch(setLocalSigned({isLog: true, id: userDocRef.id}))
             return userSnapshot.data();
         }
     }
 );
 export const signUpPassUser = createAsyncThunk(
     'user/SingUpPassUser',
-    async ({password, email, displayName}) => {
+    async ({password, email, displayName}, thunkAPI) => {
         const {user} = await authByEmailAndPassword(password, email);
-        console.log(user.uid)
         const userDocRef = await createUserDocument(user, {displayName})
         const userSnapshot = await getDoc(userDocRef);
         if (userSnapshot.exists()) {
+            thunkAPI.dispatch(setLocalSigned({isLog: true, id: userDocRef.id}))
             return userSnapshot.data();
         }
     }
@@ -46,8 +48,14 @@ export const signUpPassUser = createAsyncThunk(
 
 export const signOut = createAsyncThunk(
     'user/SignOut',
-    async () => {
-        await userSignOut();
+    async (_, thunkAPI) => {
+        try {
+            await userSignOut();
+        } catch (e) {
+            console.log(e.message)
+        } finally {
+            thunkAPI.dispatch(setLocalSigned({isLog: false, id: null}))
+        }
     }
 );
 
@@ -58,18 +66,13 @@ const userSlice = createSlice({
             createdAt:"1680384949525",
             displayName:"Stetsyo",
             email:"ihorstetsky618@gmail.com",
-            id: "2132112312312"
+            id: "21cr2r4324f342c"
         },
         isUserLogined: false,
         statusLogPopUp: "idle",
         errorLogPopUp: null
     },
     reducers: {
-        setLocalSigned: (state,action) => {
-            console.log(action.payload)
-            localStorage.setItem('isLoggedIn', action.payload.isLog)
-            localStorage.setItem('userId', action.payload.id);
-        }
     },
     extraReducers: (builder) => {
         builder
@@ -89,11 +92,10 @@ const userSlice = createSlice({
             .addCase(signOut.pending, state => {
                 state.statusLogPopUp = 'loading';
             })
-            .addCase(signOut.fulfilled, (state, _, dispatch) => {
+            .addCase(signOut.fulfilled, (state, _) => {
                 state.statusLogPopUp = 'succeeded';
                 state.currentUser = null;
                 state.isUserLogined = false;
-                dispatch(setLocalSigned(false))
             })
             .addCase(signOut.rejected, (state, action) => {
                 state.statusLogPopUp = 'failed';
@@ -131,5 +133,4 @@ const userSlice = createSlice({
     },
 });
 
-export const {setLocalSigned} = userSlice.actions;
 export default userSlice.reducer;
