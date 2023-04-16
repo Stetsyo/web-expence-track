@@ -10,8 +10,9 @@ export const fetchExpenses = createAsyncThunk(
 
 export const addExpense = createAsyncThunk(
     'expenses/addExpense',
-    async (newObject) => {
+    async (newObject, thunkAPI) => {
         const newExp = await addFirebaseExpense(newObject);
+        thunkAPI.dispatch(getCategories())
         return newExp;
     }
 );
@@ -29,7 +30,7 @@ const expenseSlice = createSlice({
     },
     reducers: {
         getCategories: (state) => {
-            state.categories = current(state.expenses).map(exp => exp.category);
+            state.categories = current(state.expenses).map(exp => exp.category).slice(-4);
         }
     },
     extraReducers: builder => {

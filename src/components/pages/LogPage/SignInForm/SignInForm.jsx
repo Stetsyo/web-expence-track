@@ -3,7 +3,7 @@ import {useDispatch} from "react-redux";
 
 import classes from "../LogPage.module.scss"
 
-import {logPassUser, logPopUpUser} from "../../../../redux/reducers/userReducer";
+import {logPassUser, logPopUpUser} from "../../../../redux/thunks/popUpThunk";
 import FormInput from "../FormInput/FormInput";
 import {useNavigate} from "react-router-dom";
 
@@ -55,7 +55,7 @@ const SignInForm = () => {
 
     return (
         <div className={classes.signInContainer}>
-            <h2>Log In</h2>
+            <h2>Sign In</h2>
             <form>
                 <FormInput value={formFields.email} name={"email"} type={"email"} label={"Input email:"} required onChange={handleChange}/>
                 <FormInput value={formFields.password} name={"password"} type={"password"} label={"Input password:"} required onChange={handleChange}/>

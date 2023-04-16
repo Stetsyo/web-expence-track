@@ -20,7 +20,7 @@ const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const {categories, expenses, initialAmount} = useSelector(state => state.expenses);
-    const currentUser = useSelector(state => state.user.currentUser);
+    const currentUser = useSelector(state => state.local.userID);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -31,8 +31,9 @@ const HomePage = () => {
         setIsModalOpen(!isModalOpen);
     };
     const addNewExpense = async() => {
+        console.log(currentUser)
         dispatch(addExpense({
-            userId: currentUser.id,
+            userId: currentUser,
             ...newExp
         }));
         handleModal();
@@ -48,6 +49,7 @@ const HomePage = () => {
                     <TodayContent expenses={expenses} initialAmount={initialAmount}/>
                 </div>
             </div>
+            <button onClick={handleModal}>Add new transaction</button>
             {isModalOpen && <ModalExpence handleModal={handleModal} setNewExp={setNewExp} addNewExpense={addNewExpense} newExp={newExp}/>}
         </div>
     );

@@ -3,8 +3,8 @@ import {useDispatch} from "react-redux";
 
 import classes from "../LogPage.module.scss";
 
-import {signUpPassUser} from "../../../../redux/reducers/userReducer";
-import {Form, useNavigate} from "react-router-dom";
+import {signUpPassUser} from "../../../../redux/thunks/popUpThunk";
+import {useNavigate} from "react-router-dom";
 import FormInput from "../FormInput/FormInput";
 
 const SignUpForm = () => {
@@ -50,7 +50,7 @@ const SignUpForm = () => {
 
     return (
         <div className={classes.signUpContainer}>
-            <h2>Don`t have account an? Create a new one!</h2>
+            <h2>Don`t have an account? Create a new one!</h2>
             <span>Sign Up with email and password</span>
             <form onSubmit={handleSubmit}>
                 <FormInput
